@@ -9,13 +9,14 @@ public static class WorkflowRunner {
 
         string? result = null;
         
+        var startedUtc = DateTime.UtcNow;
         var stopwatch = Stopwatch.StartNew();
         var lastElapsed = TimeSpan.Zero;
         
         await using var run = await InProcessExecution.RunStreamingAsync(workflow, input, cancellationToken: cancellationToken);
         await run.TrySendMessageAsync(new TurnToken(emitEvents: true));
 
-        Logger.PrintLogHeader(workflow.Name ?? "Workflow Run", DateTime.UtcNow);
+        Logger.PrintLogHeader(workflow.Name ?? "Workflow Run", startedUtc);
         Logger.PrintTableHeader();
         
         await foreach (var evt in run.WatchStreamAsync(cancellationToken)) {
@@ -58,7 +59,7 @@ public static class WorkflowRunner {
             }
         }
 
-        Logger.PrintLogFooter(workflow.Name ?? "Workflow Run", DateTime.UtcNow, stopwatch.Elapsed);
+        Logger.PrintLogFooter(workflow.Name ?? "Workflow Run", startedUtc, stopwatch.Elapsed);
         
         return result ?? "Work flow result is null";
     }

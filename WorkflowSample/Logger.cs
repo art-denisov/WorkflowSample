@@ -100,10 +100,10 @@ public static class Logger {
     }
 
     public static void PrintLogFooter( string title, DateTime startedAtUtc, TimeSpan elapsed) {
-        Console.WriteLine($"{AnsiColors.Magenta}=== FINISH GENERATION ==={AnsiColors.Reset}");
         Console.WriteLine($"{AnsiColors.Magenta}=== {title} ==={AnsiColors.Reset}");
-        Console.WriteLine($"{AnsiColors.Gray}Started : {startedAtUtc:yyyy-MM-dd HH:mm:ss.fff} UTC{AnsiColors.Reset}");
-        Console.WriteLine($"{AnsiColors.Gray}Elapsed : {elapsed.TotalMilliseconds:0} ms{AnsiColors.Reset}");
+        Console.WriteLine($"{AnsiColors.Gray}[Started : {startedAtUtc:yyyy-MM-dd HH:mm:ss.fff} UTC]{AnsiColors.Reset}");
+        Console.WriteLine($"{AnsiColors.Gray}[Elapsed : {elapsed.TotalMilliseconds:0} ms]{AnsiColors.Reset}");
+        Console.WriteLine($"{AnsiColors.Magenta}=== FINISH GENERATION ==={AnsiColors.Reset}");
     }
 
     static string Pad(string text, int width) {
