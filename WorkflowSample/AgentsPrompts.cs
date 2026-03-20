@@ -4,7 +4,7 @@ namespace WorkflowSample;
 
 public static class AgentsPrompts {
     const string firstAgentSystem = "first_agent_prompt.md";
-    const string secondAgentSystem = "second_agent__prompt.md";
+    const string secondAgentSystem = "second_agent_prompt.md";
     const string thirdAgentSystem = "third_agent_prompt.md";
     
     public static string FirstAgentSystem => GetPromptByName(firstAgentSystem);
