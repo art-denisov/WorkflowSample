@@ -3,31 +3,33 @@ using Microsoft.Agents.AI.Workflows;
 
 namespace WorkflowSample;
 
-public class WorkflowRunner {
-    public async static Task<string> RunWorkflowAsync<TInput>(Workflow workflow, TInput input, CancellationToken cancellationToken) {
+public static class WorkflowRunner {
+    public async static Task<string> RunWorkflowAsync<TInput>(Workflow workflow, TInput input, Logger.LoggerOptions options, CancellationToken cancellationToken = default) {
         ArgumentNullException.ThrowIfNull(workflow);
 
         string? result = null;
         
         var stopwatch = Stopwatch.StartNew();
         var lastElapsed = TimeSpan.Zero;
-
-
-        await using StreamingRun run = await InProcessExecution.RunStreamingAsync(workflow, input, cancellationToken: cancellationToken);
+        
+        await using var run = await InProcessExecution.RunStreamingAsync(workflow, input, cancellationToken: cancellationToken);
         await run.TrySendMessageAsync(new TurnToken(emitEvents: true));
 
         Logger.PrintLogHeader(workflow.Name ?? "Workflow Run", DateTime.UtcNow);
         Logger.PrintTableHeader();
         
-        await foreach (var @event in run.WatchStreamAsync(cancellationToken)) {
+        await foreach (var evt in run.WatchStreamAsync(cancellationToken)) {
+            if(options.SkipAgentUpdateEvents && evt is AgentResponseUpdateEvent)
+                continue;
+            
             var nowUtc = DateTime.UtcNow;
             var elapsed = stopwatch.Elapsed;
             var delta = elapsed - lastElapsed;
             lastElapsed = elapsed;
+            
+            Logger.LogWorkflowEvent(evt, nowUtc, elapsed, delta);
 
-            Logger.LogWorkflowEvent(@event, nowUtc, elapsed, delta);
-
-            switch (@event) {
+            switch (evt) {
                 case AgentResponseEvent agentResponseEvent: 
                     break;
                 case AgentResponseUpdateEvent agentResponseUpdateEvent:

@@ -4,6 +4,11 @@ namespace WorkflowSample;
 
 public static class Logger {
 
+    public record LoggerOptions {
+        public bool Enabled { get; init; } = true;
+        public bool SkipAgentUpdateEvents { get; init; } = true;
+    }
+
     static Logger() {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
     }

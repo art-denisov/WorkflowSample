@@ -14,10 +14,10 @@ var azureOpenAIApiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY
                         ?? throw new InvalidOperationException("AZURE_OPENAI_API_KEY is not set.");
 
 Console.WriteLine($"{AnsiColors.Green}Using Azure OpenAI Endpoint: {azureOpenAIEndpoint}{AnsiColors.Reset}");
-Console.WriteLine($"{AnsiColors.Green}Using Deployment: {DEPLOYMENT_GPT_5_MINI}{AnsiColors.Reset}");
+Console.WriteLine($"{AnsiColors.Green}Using Deployment: {DEPLOYMENT_GPT_4_1}{AnsiColors.Reset}");
 
 var azureClient = new AzureOpenAIClient(new Uri(azureOpenAIEndpoint), new ApiKeyCredential(azureOpenAIApiKey)); 
-var chatClient = azureClient.GetChatClient(DEPLOYMENT_GPT_5_MINI).AsIChatClient();
+var chatClient = azureClient.GetChatClient(DEPLOYMENT_GPT_4_1).AsIChatClient();
 
 const string USER_PROMPT = """
                           I need a standard invoice for a client. At the top — the company logo, a large “Invoice” title, invoice number, issue date, and due date. On the left — client information (bill to), on the right — shipping address if different. 
@@ -26,6 +26,6 @@ const string USER_PROMPT = """
                           """;
 
 var workflow = WorkflowFactory.CreateWorkflow(chatClient, "Report Generation Workflow");
-var workflowResult = await WorkflowRunner.RunWorkflowAsync(workflow, USER_PROMPT, CancellationToken.None).ConfigureAwait(false);
+var workflowResult = await WorkflowRunner.RunWorkflowAsync(workflow, USER_PROMPT, new Logger.LoggerOptions() {Enabled = true, SkipAgentUpdateEvents = true}).ConfigureAwait(false);
 
 ResultPrinter.Print(workflowResult);
