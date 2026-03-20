@@ -4,7 +4,8 @@ using Microsoft.Agents.AI.Workflows;
 namespace WorkflowSample;
 
 public static class WorkflowRunner {
-    public async static Task<string> RunWorkflowAsync<TInput>(Workflow workflow, TInput input, Logger.LoggerOptions? options = null, CancellationToken cancellationToken = default) {
+    public static async Task<string> RunWorkflowAsync<TInput>(Workflow workflow, TInput input, Logger.LoggerOptions? options = null, CancellationToken cancellationToken = default) where TInput : notnull
+    {
         ArgumentNullException.ThrowIfNull(workflow);
 
         string? result = null;

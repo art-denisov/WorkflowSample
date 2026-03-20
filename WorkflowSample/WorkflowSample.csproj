@@ -4,20 +4,17 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
+        <EmitLegacyAssetsFileItems>True</EmitLegacyAssetsFileItems>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
-        <PackageReference Include="Microsoft.Agents.AI" Version="1.0.0-rc1" />
-        <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-rc1" />
-        <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.0.0-rc1" />
+        <PackageReference Include="Azure.AI.OpenAI" Version="2.9.0-beta.1" />
+        <PackageReference Include="Microsoft.Agents.AI" Version="1.0.0-rc4" />
+        <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.0.0-rc4" />
         
         <PackageReference Include="Microsoft.Extensions.AI" Version="10.3.0" />
-        <PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="10.3.0" />
         <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.3.0" />
-        
-        <PackageReference Include="System.Text.Json" Version="10.0.3" />
     </ItemGroup>
 
     <ItemGroup>
