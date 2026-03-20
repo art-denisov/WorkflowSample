@@ -19,7 +19,7 @@ public static class WorkflowRunner {
         Logger.PrintTableHeader();
         
         await foreach (var evt in run.WatchStreamAsync(cancellationToken)) {
-            if(options.SkipAgentUpdateEvents && evt is AgentResponseUpdateEvent)
+            if(evt is AgentResponseUpdateEvent && options.SkipForEvents.Contains(evt.GetType()))
                 continue;
             
             var nowUtc = DateTime.UtcNow;

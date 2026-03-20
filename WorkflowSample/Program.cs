@@ -1,5 +1,6 @@
 ﻿using System.ClientModel;
 using Azure.AI.OpenAI;
+using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using WorkflowSample;
 
@@ -26,6 +27,6 @@ const string USER_PROMPT = """
                           """;
 
 var workflow = WorkflowFactory.CreateWorkflow(chatClient, "Report Generation Workflow");
-var workflowResult = await WorkflowRunner.RunWorkflowAsync(workflow, USER_PROMPT, new Logger.LoggerOptions() {Enabled = true, SkipAgentUpdateEvents = true}).ConfigureAwait(false);
+var workflowResult = await WorkflowRunner.RunWorkflowAsync(workflow, USER_PROMPT, new Logger.LoggerOptions() {Enabled = true, SkipForEvents = [typeof(AgentResponseUpdateEvent)] }).ConfigureAwait(false);
 
 ResultPrinter.Print(workflowResult);

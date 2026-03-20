@@ -3,10 +3,10 @@ using Microsoft.Agents.AI.Workflows;
 namespace WorkflowSample;
 
 public static class Logger {
-
+    
     public record LoggerOptions {
         public bool Enabled { get; init; } = true;
-        public bool SkipAgentUpdateEvents { get; init; } = true;
+        public HashSet<Type> SkipForEvents { get; init; } = [];
     }
 
     static Logger() {
