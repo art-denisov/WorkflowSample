@@ -4,6 +4,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using WorkflowSample;
 
+// Setup
 const string DEPLOYMENT_GPT_4_1 = "gpt-4.1";
 const string DEPLOYMENT_GPT_5_MINI = "gpt-5-mini";
 
@@ -20,13 +21,18 @@ Console.WriteLine($"{AnsiColors.Green}Using Deployment: {DEPLOYMENT_GPT_4_1}{Ans
 var azureClient = new AzureOpenAIClient(new Uri(azureOpenAIEndpoint), new ApiKeyCredential(azureOpenAIApiKey)); 
 var chatClient = azureClient.GetChatClient(DEPLOYMENT_GPT_4_1).AsIChatClient();
 
-const string USER_PROMPT = """
-                          I need a standard invoice for a client. At the top — the company logo, a large “Invoice” title, invoice number, issue date, and due date. On the left — client information (bill to), on the right — shipping address if different. 
-                          The main section should contain a table of line items: description of product or service, quantity, unit price, and line total. At the bottom, show subtotal, tax, shipping if applicable, and prominently highlight the total amount due. 
-                          At the end, add payment terms and a short message such as “Thank you for your business.” Style — professional and clean.
-                          """;
+var firstAgent = AgentFactory.CreateAgent(chatClient, "FirstAgent", "FirstAgent", "You are a helpful assistant. Reply briefly."); 
 
-var workflow = WorkflowFactory.CreateWorkflow(chatClient, "Report Generation Workflow");
-var workflowResult = await WorkflowRunner.RunWorkflowAsync(workflow, USER_PROMPT, new Logger.LoggerOptions(){SkipForEvents = [typeof(AgentResponseUpdateEvent)]}).ConfigureAwait(false);
+var secondAgent = AgentFactory.CreateAgent(chatClient, "SecondAgent", "SecondAgent", "You are a string reverter. Reply with a reverted message");
+
+var outputExecutor = AgentFactory.CreateOutputExecutor();
+
+var workflow = new WorkflowBuilder(firstAgent)
+    .AddEdge(firstAgent, secondAgent)
+    .AddEdge(secondAgent, outputExecutor)
+    .WithOutputFrom(outputExecutor)
+    .Build();
+
+var workflowResult = await WorkflowRunner.RunWorkflowAsync(workflow, "What is 2+2*2?", new Logger.LoggerOptions(){SkipForEvents = [typeof(AgentResponseUpdateEvent)]}).ConfigureAwait(false);
 
 ResultPrinter.Print(workflowResult);

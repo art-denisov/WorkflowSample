@@ -11,8 +11,7 @@ public static class AgentFactory {
                 Name = agentName,
                 Description = description,
                 ChatOptions = new ChatOptions {
-                        Instructions = agentPrompt,
-                        ResponseFormat = responseType != null ? ChatResponseFormat.ForJsonSchema(schema: AIJsonUtilities.CreateJsonSchema(responseType), schemaName: responseType.Name, schemaDescription: $"{responseType.Name} response schema") : null
+                        Instructions = agentPrompt
                     }
             };
 
@@ -29,30 +28,24 @@ public static class AgentFactory {
                 return ops;
             }
 
-            [MessageHandler]
-            async ValueTask<string> HandleAsync(
-                List<ChatMessage> messages,
-                IWorkflowContext context,
-                CancellationToken cancellationToken = default) {
+        [MessageHandler]
+        async ValueTask<string> HandleAsync(List<ChatMessage> messages, IWorkflowContext context, CancellationToken cancellationToken = default) {
+            var lastMessage = FilterToLastMessage(messages);
 
-                var lastMessage = FilterToLastMessage(messages);
-
-                if(lastMessage == null) {
-                    await ValueTask.FromResult(string.Empty);
-                }
-
-                return lastMessage?.Text;
+            if(lastMessage == null) {
+                await ValueTask.FromResult(string.Empty);
             }
 
-            private static ChatMessage FilterToLastMessage(List<ChatMessage> messages) {
-                return messages.LastOrDefault(m => m.Role == ChatRole.Assistant);
-            }
+            return lastMessage?.Text;
+        }
 
-            protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder) {
-                protocolBuilder.ConfigureRoutes(routes =>
-                    routes.AddHandler<List<ChatMessage>, string>(HandleAsync));
+        private static ChatMessage FilterToLastMessage(List<ChatMessage> messages) {
+            return messages.LastOrDefault(m => m.Role == ChatRole.Assistant);
+        }
 
-                return protocolBuilder;
-            }
+        protected override ProtocolBuilder ConfigureProtocol(ProtocolBuilder protocolBuilder) {
+            protocolBuilder.ConfigureRoutes(routes => routes.AddHandler<List<ChatMessage>, string>(HandleAsync));
+            return protocolBuilder;
         }
     }
+}
